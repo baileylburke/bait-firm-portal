@@ -4,7 +4,7 @@ const Plan = require('./objects/Plan');
 const License = require('./objects/License');
 const Release = require('./objects/Release');
 const Ticket = require('./objects/Ticket');
-const { hashPassword } = require('./passwords');
+const { hashPasswordSync } = require('./passwords');
 
 const store = {
   firms: [],
@@ -114,7 +114,7 @@ function seed() {
       firmId: nextId('firm'),
       name: 'BAIT Administration',
       email: 'admin@bait.tax',
-      passwordHash: hashPassword(process.env.ADMIN_PASSWORD || 'bait-admin-demo'),
+      passwordHash: hashPasswordSync(process.env.ADMIN_PASSWORD || 'bait-admin-demo'),
       preparerCount: 1,
       role: Firm.ROLES.ADMIN,
     }),

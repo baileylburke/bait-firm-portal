@@ -1,0 +1,64 @@
+<%- include('partials/header') %>
+<%- include('partials/nav') %>
+
+<main id="main">
+  <section class="section">
+    <div class="wrap narrow">
+      <p class="eyebrow">New firm</p>
+      <h1>Register your firm</h1>
+      <p class="lead-sm">One account for the office. After you register, you choose a license plan, download releases, and file support tickets.</p>
+
+      <% const failed = Object.keys(errors).length; %>
+      <% if (failed) { %>
+        <div class="alert error" role="alert">
+          <p>The account was not created. Correct the <%= failed === 1 ? 'field' : 'fields' %> marked below.</p>
+        </div>
+      <% } %>
+
+      <form class="form boxed" method="post" action="/register" novalidate>
+        <div>
+          <label for="name">Firm name</label>
+          <input id="name" name="name" type="text" maxlength="<%= rules.NAME_MAX %>" autocomplete="organization" required
+            value="<%= values.name || '' %>"
+            <% if (errors.name) { %>aria-invalid="true" aria-describedby="name-error"<% } %>>
+          <% if (errors.name) { %><p class="field-error" id="name-error"><%= errors.name %></p><% } %>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="email">Contact email</label>
+            <input id="email" name="email" type="email" autocomplete="email" required
+              value="<%= values.email || '' %>"
+              <% if (errors.email) { %>aria-invalid="true" aria-describedby="email-error"<% } %>>
+            <% if (errors.email) { %><p class="field-error" id="email-error"><%= errors.email %></p><% } %>
+          </div>
+          <div>
+            <label for="preparerCount">Number of preparers</label>
+            <input id="preparerCount" name="preparerCount" type="number" inputmode="numeric" step="1"
+              min="<%= rules.PREPARERS_MIN %>" max="<%= rules.PREPARERS_MAX %>" required
+              value="<%= values.preparerCount || '' %>"
+              <% if (errors.preparerCount) { %>aria-invalid="true" aria-describedby="preparerCount-error"<% } %>>
+            <% if (errors.preparerCount) { %><p class="field-error" id="preparerCount-error"><%= errors.preparerCount %></p><% } %>
+          </div>
+        </div>
+
+        <div>
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="new-password" required
+            minlength="<%= rules.PASSWORD_MIN %>" maxlength="<%= rules.PASSWORD_MAX %>"
+            aria-describedby="password-hint<%= errors.password ? ' password-error' : '' %>"
+            <% if (errors.password) { %>aria-invalid="true"<% } %>>
+          <% if (errors.password) { %><p class="field-error" id="password-error"><%= errors.password %></p><% } %>
+          <p class="field-hint" id="password-hint">At least <%= rules.PASSWORD_MIN %> characters. The portal stores a hash, not the password.</p>
+        </div>
+
+        <div class="form-foot">
+          <button class="btn primary" type="submit">Create the account</button>
+          <span class="muted">Already registered? <a href="/sign-in">Sign in</a></span>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

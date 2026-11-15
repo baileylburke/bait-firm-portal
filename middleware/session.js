@@ -18,6 +18,24 @@ const sessions = session({
   },
 });
 
+// Replace the session with an empty one
+function newSession(req) {
+  return new Promise((resolve, reject) => {
+    req.session.regenerate((err) => (err ? reject(err) : resolve()));
+  });
+}
+
+// Regenerate the session ID before storing the firm ID
+async function startSession(req, firm) {
+  await newSession(req);
+  req.session.firmId = firm.firmId;
+}
+
+// Clear the old session on sign out
+async function endSession(req) {
+  await newSession(req);
+}
+
 // Save an ok, error, or info message for the next page
 function setFlash(req, kind, text) {
   req.session.flash = { kind, text };
@@ -33,4 +51,4 @@ function flashToView(req, res, next) {
   next();
 }
 
-module.exports = { sessions, setFlash, flashToView };
+module.exports = { sessions, startSession, endSession, setFlash, flashToView };

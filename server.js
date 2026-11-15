@@ -3,6 +3,7 @@ const path = require('path');
 const express = require('express');
 
 const pageRoutes = require('./routes/pageRoutes');
+const authRoutes = require('./routes/authRoutes');
 const dataStore = require('./services/dataStore');
 
 const securityHeaders = require('./middleware/security');
@@ -37,18 +38,19 @@ app.use(requestLogger);
 // Serve public assets
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Limit form and JSON request bodies
-app.use(express.urlencoded({ extended: false, limit: '20kb' }));
-app.use(express.json({ limit: '20kb' }));
-
-// Load sessions, flash messages, and the current account
+// Load sessions before parsing so error pages show the correct navigation
 app.use(sessions);
 app.use(flashToView);
 app.use(loadCurrentFirm);
 
+// Limit form and JSON request bodies
+app.use(express.urlencoded({ extended: false, limit: '20kb' }));
+app.use(express.json({ limit: '20kb' }));
+
 // routes
 
 app.use('/', pageRoutes);
+app.use('/', authRoutes);
 
 // after the routes
 

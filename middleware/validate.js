@@ -2,8 +2,9 @@
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-function clean(raw) {
-  return typeof raw === 'string' ? raw.trim() : '';
+function clean(raw, keepSpaces) {
+  if (typeof raw !== 'string') return '';
+  return keepSpaces ? raw : raw.trim();
 }
 
 // Checks return an error or a converted value and only required rejects empty input
@@ -54,12 +55,12 @@ function oneOf(allowed, message = 'Choose one of the listed options.') {
 // the validator
 
 // Stop at the first failed check for each field
-function validate(source, rules) {
+function validate(source, rules, { keepSpaces = [] } = {}) {
   const values = {};
   const errors = {};
 
   for (const [field, checks] of Object.entries(rules)) {
-    let value = clean(source ? source[field] : undefined);
+    let value = clean(source ? source[field] : undefined, keepSpaces.includes(field));
     for (const check of checks) {
       const result = check(String(value));
       if (result && result.error) {
@@ -77,9 +78,9 @@ function validate(source, rules) {
 }
 
 // Validate the request body using the route rules
-function validateBody(rules) {
+function validateBody(rules, options) {
   return (req, res, next) => {
-    req.validated = validate(req.body, rules);
+    req.validated = validate(req.body, rules, options);
     next();
   };
 }

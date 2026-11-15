@@ -183,6 +183,11 @@ form.inline { display: inline; margin: 0; }
 .form input:focus, .form textarea:focus, .form select:focus { border-color: var(--navy); outline: 3px solid rgba(31, 58, 95, 0.15); outline-offset: 0; }
 .form textarea { resize: vertical; min-height: 6rem; }
 .form-foot { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.form input[aria-invalid="true"], .form textarea[aria-invalid="true"], .form select[aria-invalid="true"] { border-color: var(--override); background: #fffafb; }
+.field-error { margin: 0.35rem 0 0; font-size: 0.9rem; font-weight: 600; color: var(--override); }
+.field-hint { margin: 0.35rem 0 0; font-size: 0.88rem; color: var(--muted); }
+.flash { margin-top: 1rem; }
+.flash .alert { margin: 0; }
 .alert { padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid transparent; margin: 1rem 0; }
 .alert p { margin: 0 0 0.4rem; }
 .alert p:last-child { margin: 0; }

@@ -1,3 +1,5 @@
+<%# Show navigation links for the current account %>
+<% const firm = locals.currentFirm || null; %>
 <header class="top">
   <div class="wrap nav">
     <a class="brand" href="/" aria-label="<%= site.name %> home">
@@ -7,5 +9,21 @@
     <nav class="links" aria-label="Site">
       <a href="/" class="<%= active === 'home' ? 'on' : '' %>">Home</a>
     </nav>
+    <div class="actions">
+      <% if (firm) { %>
+        <span class="who" title="<%= firm.email %>"><%= firm.name %></span>
+        <form class="inline" method="post" action="/sign-out">
+          <button class="btn ghost small" type="submit">Sign out</button>
+        </form>
+      <% } else { %>
+        <a class="btn ghost small<%= active === 'sign-in' ? ' on' : '' %>" href="/sign-in">Sign in</a>
+        <a class="btn primary small" href="/register">Register</a>
+      <% } %>
+    </div>
   </div>
 </header>
+<% if (locals.flash) { %>
+  <div class="wrap flash">
+    <div class="alert <%= flash.kind %>" role="status"><p><%= flash.text %></p></div>
+  </div>
+<% } %>
