@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+<%- include('partials/nav') %>
+
+<main id="main">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">BAIT Firm Portal · For accounting firms</p>
+        <h1>One place for your firm’s license, downloads, and support.</h1>
+        <p class="lead"><%= site.product %> is professional tax-preparation software for Windows. The Firm Portal is where your office buys its license, downloads each release, and reports what needs to be fixed or added.</p>
+        <p class="status"><span class="pill">Private preview</span> Firms join by invitation. Client and return data never leave the firm’s own computers.</p>
+      </div>
+      <div class="hero-art">
+        <div class="shot" role="group" aria-label="A <%= sample.year %> <%= sample.form %> return open in BAIT">
+          <div class="shot-bar"><span class="dots"><i></i><i></i><i></i></span><span class="shot-title">BAIT — <%= sample.client %> · 1040 · <%= sample.year %></span></div>
+          <div class="shot-tools"><span>Save</span><span>Add Forms</span><span>Check Return</span><span>Print</span><span>Documents</span><span>Planner</span></div>
+          <div class="shot-form">
+            <div class="shot-head"><b><%= sample.form %></b><span><%= sample.title %></span><em><%= sample.year %></em></div>
+            <% sample.lines.forEach((line) => { %>
+              <div class="shot-line"><span class="n"><%= line.n %></span><span class="l"><%= line.label %></span><span class="v <%= line.kind %>"><%= line.value %></span></div>
+            <% }) %>
+          </div>
+          <div class="shot-status"><span class="ok">Check Return</span> 0 errors · 2 warnings · 1 override</div>
+        </div>
+        <ul class="legend" aria-label="Field colors"><li><i class="entered"></i>Entered</li><li><i class="calc"></i>Calculated</li><li><i class="override"></i>Overridden</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="strip">
+    <div class="wrap strip-row">
+      <div><span class="strip-label">Built for</span><span class="chips core"><b>1040</b><b>1065</b><b>1120-S</b></span></div>
+      <div><span class="strip-label">Also prepares</span><span class="chips"><span>1120</span><span>1041</span><span>990</span><span>1040-NR</span></span></div>
+    </div>
+  </section>
+
+  <section id="portal" class="section">
+    <div class="wrap">
+      <p class="eyebrow">What the portal does</p>
+      <h2>Everything between your firm and the developer, in one place.</h2>
+      <div class="grid three">
+        <% portalFeatures.forEach((feature) => { %>
+          <article class="card"><h3><%= feature.title %></h3><p><%= feature.body %></p></article>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+
+  <section id="product" class="section alt">
+    <div class="wrap">
+      <p class="eyebrow">The software</p>
+      <h2>Forms, not interviews. Your hands already know it.</h2>
+      <div class="grid four">
+        <% productFeatures.forEach((feature) => { %>
+          <article class="card"><h3><%= feature.title %></h3><p><%= feature.body %></p></article>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>
