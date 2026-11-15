@@ -64,12 +64,4 @@ function home(req, res) {
   });
 }
 
-function notFound(req, res) {
-  res.status(404).render('not-found', {
-    pageTitle: 'Page not found',
-    active: '',
-    path: req.originalUrl,
-  });
-}
-
-module.exports = { home, notFound };
+module.exports = { home };

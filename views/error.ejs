@@ -1,0 +1,17 @@
+<%- include('partials/header') %>
+<%- include('partials/nav') %>
+
+<main id="main">
+  <section class="section">
+    <div class="wrap narrow">
+      <p class="eyebrow">Error <%= status %></p>
+      <h1><%= pageTitle %></h1>
+      <div class="alert error" role="alert">
+        <p><%= message %></p>
+      </div>
+      <p><a class="btn primary" href="/">Back to Home</a></p>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>
