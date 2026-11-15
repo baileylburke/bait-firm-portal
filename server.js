@@ -4,6 +4,7 @@ const express = require('express');
 
 const pageRoutes = require('./routes/pageRoutes');
 const pageController = require('./controllers/pageController');
+const dataStore = require('./services/dataStore');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,7 +30,9 @@ app.use('/', pageRoutes);
 app.use(pageController.notFound);
 
 app.listen(PORT, () => {
+  const { plans, releases, firms } = dataStore.store;
   console.log(`BAIT Firm Portal is running at http://localhost:${PORT}`);
+  console.log(`In-memory store ready: ${plans.length} plans, ${releases.length} releases, ${firms.length} firm account(s).`);
 });
 
 module.exports = app;
