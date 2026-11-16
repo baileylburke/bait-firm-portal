@@ -76,7 +76,14 @@ app.use(errorHandler);
 
 // Listen only when run directly so importing the app does not open a port
 if (require.main === module) {
-  app.listen(PORT, () => {
+  // Handle startup errors passed to the Express 5 listen callback
+  app.listen(PORT, (err) => {
+    if (err) {
+      const why = err.code === 'EADDRINUSE' ? `port ${PORT} is already in use` : err.message;
+      console.error(`BAIT Firm Portal could not start: ${why}.`);
+      process.exitCode = 1;
+      return;
+    }
     const { plans, releases, firms } = dataStore.store;
     console.log(`BAIT Firm Portal is running at http://localhost:${PORT}`);
     console.log(`In-memory store ready: ${plans.length} plans, ${releases.length} releases, ${firms.length} firm account(s).`);

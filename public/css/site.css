@@ -270,6 +270,8 @@ form.inline { display: inline; margin: 0; }
 .form input[aria-invalid="true"], .form textarea[aria-invalid="true"], .form select[aria-invalid="true"] { border-color: var(--override); background: #fffafb; }
 .field-error { margin: 0.35rem 0 0; font-size: 0.9rem; font-weight: 600; color: var(--override); }
 .field-hint { margin: 0.35rem 0 0; font-size: 0.88rem; color: var(--muted); }
+.field-count { margin: 0.35rem 0 0; font-size: 0.82rem; color: var(--muted); text-align: right; }
+.field-count.low { color: var(--override); font-weight: 600; }
 .flash { margin-top: 1rem; }
 .flash .alert { margin: 0; }
 .alert { padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid transparent; margin: 1rem 0; }
