@@ -1,0 +1,119 @@
+<%- include('partials/header') %>
+<%- include('partials/nav') %>
+<% const firm = locals.currentFirm || null; %>
+<% const isAdmin = Boolean(firm) && firm.role === 'admin'; %>
+<% const failed = Object.keys(errors).length; %>
+<% const statusClass = (status) => status.toLowerCase().replace(/\s+/g, '-'); %>
+
+<main id="main">
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Support</p>
+      <h1>Report a bug or request a change.</h1>
+      <p class="lead-sm">Each ticket names the return type and the form, so the developer can find the problem. A ticket starts as Open, moves to In progress, and becomes Shipped in the release that includes the fix.</p>
+
+      <% if (reason) { %>
+        <div class="alert error" role="alert">
+          <p><b>The ticket was not filed.</b> <%= reason %></p>
+        </div>
+      <% } else if (failed) { %>
+        <div class="alert error" role="alert">
+          <p><b>The ticket was not filed.</b> Correct the <%= failed === 1 ? 'field' : 'fields' %> marked below.</p>
+        </div>
+      <% } %>
+
+      <div class="support-grid">
+        <div class="support-form">
+          <h2>New ticket</h2>
+          <% if (isAdmin) { %>
+            <div class="alert info"><p>You are signed in as the administrator. An administrator account does not file tickets.</p></div>
+          <% } else { %>
+            <form class="form boxed" method="post" action="/support/tickets" novalidate>
+              <fieldset class="choice" <% if (errors.type) { %>aria-invalid="true" aria-describedby="type-error"<% } %>>
+                <legend>Type</legend>
+                <% choices.types.forEach((choice) => { %>
+                  <label class="choice-item">
+                    <input type="radio" name="type" value="<%= choice.value %>" required <%= values.type === choice.value ? 'checked' : '' %>>
+                    <span><b><%= choice.label %></b><span class="choice-hint"><%= choice.hint %></span></span>
+                  </label>
+                <% }) %>
+                <% if (errors.type) { %><p class="field-error" id="type-error"><%= errors.type %></p><% } %>
+              </fieldset>
+
+              <div class="row">
+                <div>
+                  <label for="returnType">Return type</label>
+                  <select id="returnType" name="returnType" required
+                    <% if (errors.returnType) { %>aria-invalid="true" aria-describedby="returnType-error"<% } %>>
+                    <option value="">Choose…</option>
+                    <% choices.returnTypes.forEach((returnType) => { %>
+                      <option value="<%= returnType %>" <%= values.returnType === returnType ? 'selected' : '' %>><%= returnType %></option>
+                    <% }) %>
+                  </select>
+                  <% if (errors.returnType) { %><p class="field-error" id="returnType-error"><%= errors.returnType %></p><% } %>
+                </div>
+                <div>
+                  <label for="form">Form or schedule</label>
+                  <input id="form" name="form" type="text" maxlength="<%= choices.rules.FORM_MAX %>" required
+                    placeholder="Schedule C"
+                    value="<%= values.form || '' %>"
+                    <% if (errors.form) { %>aria-invalid="true" aria-describedby="form-error"<% } %>>
+                  <% if (errors.form) { %><p class="field-error" id="form-error"><%= errors.form %></p><% } %>
+                </div>
+              </div>
+
+              <div>
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="6" required
+                  minlength="<%= choices.rules.DESCRIPTION_MIN %>" maxlength="<%= choices.rules.DESCRIPTION_MAX %>"
+                  aria-describedby="description-hint<%= errors.description ? ' description-error' : '' %>"
+                  <% if (errors.description) { %>aria-invalid="true"<% } %>><%= values.description || '' %></textarea>
+                <% if (errors.description) { %><p class="field-error" id="description-error"><%= errors.description %></p><% } %>
+                <p class="field-hint" id="description-hint">Say what you entered, what BAIT showed, and what you expected. Do not include client names or taxpayer numbers.</p>
+              </div>
+
+              <div class="form-foot">
+                <button class="btn primary" type="submit">File the ticket</button>
+              </div>
+            </form>
+          <% } %>
+        </div>
+
+        <div class="support-list">
+          <h2>Your tickets</h2>
+          <% if (tickets.length === 0) { %>
+            <p class="muted"><%= firm.name %> has no tickets yet.</p>
+          <% } else { %>
+            <p class="ticket-counts">
+              <% Object.entries(counts).forEach(([status, count]) => { %>
+                <span><b><%= count %></b> <%= status %></span>
+              <% }) %>
+            </p>
+            <div class="table-wrap">
+              <table class="list tickets">
+                <thead>
+                  <tr><th scope="col">Ticket</th><th scope="col">For</th><th scope="col">Description</th><th scope="col">Status</th></tr>
+                </thead>
+                <tbody>
+                  <% tickets.forEach((ticket) => { %>
+                    <tr>
+                      <td class="ticket-id"><b>#<%= ticket.ticketId %></b><span class="ticket-sub"><%= shortDate(ticket.createdOn) %></span></td>
+                      <td><%= ticket.returnType %>, <%= ticket.form %><span class="ticket-sub"><%= ticket.typeLabel() %></span></td>
+                      <td class="msg"><%= ticket.description %></td>
+                      <td class="ticket-status">
+                        <span class="tag status-<%= statusClass(ticket.status) %>"><%= ticket.status %></span>
+                        <% if (ticket.shippedIn) { %><span class="ticket-sub">in BAIT <%= ticket.shippedIn %></span><% } %>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

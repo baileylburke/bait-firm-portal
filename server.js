@@ -6,6 +6,7 @@ const pageRoutes = require('./routes/pageRoutes');
 const authRoutes = require('./routes/authRoutes');
 const planRoutes = require('./routes/planRoutes');
 const releaseRoutes = require('./routes/releaseRoutes');
+const supportRoutes = require('./routes/supportRoutes');
 const dataStore = require('./services/dataStore');
 
 const securityHeaders = require('./middleware/security');
@@ -59,6 +60,7 @@ app.use('/', pageRoutes);
 app.use('/', authRoutes);
 app.use('/', planRoutes);
 app.use('/', releaseRoutes);
+app.use('/', supportRoutes);
 
 // after the routes
 

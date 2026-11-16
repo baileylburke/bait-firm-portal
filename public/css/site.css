@@ -203,6 +203,25 @@ form.inline { display: inline; margin: 0; }
 @media (max-width: 720px) { .release-get { justify-items: start; } }
 .release-file { font-size: 0.85rem; color: var(--muted); }
 
+/* support */
+.support-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(1.5rem, 3vw, 3rem); align-items: start; margin-top: 1.8rem; }
+@media (max-width: 960px) { .support-grid { grid-template-columns: minmax(0, 1fr); } }
+.support-grid h2 { font-size: 1.5rem; margin: 0; }
+.form fieldset.choice { border: 0; padding: 0; margin: 0; display: grid; gap: 0.5rem; min-width: 0; }
+.form fieldset.choice legend { font-weight: 600; font-size: 0.95rem; padding: 0; margin-bottom: 0.35rem; }
+.form label.choice-item { display: flex; gap: 0.7rem; align-items: flex-start; border: 1px solid var(--rule); border-radius: 7px; padding: 0.6rem 0.75rem; font-weight: 400; cursor: pointer; }
+.form label.choice-item:has(input:checked) { border-color: var(--navy); background: var(--info-soft); }
+.form label.choice-item input { width: auto; margin: 0.25rem 0 0; }
+.form fieldset.choice[aria-invalid="true"] label.choice-item { border-color: var(--override); }
+.choice-hint { display: block; font-size: 0.88rem; color: var(--muted); }
+.support-list > p.muted { margin: 0.6rem 0 0; }
+.ticket-counts { display: flex; gap: 1.2rem; flex-wrap: wrap; margin: 0.6rem 0 0; color: var(--muted); font-size: 0.92rem; }
+.ticket-counts b { color: var(--navy-deep); }
+.ticket-sub { display: block; font-size: 0.82rem; color: var(--muted); white-space: nowrap; }
+.tickets td.ticket-id, .tickets td.ticket-status { white-space: nowrap; }
+.tag.status-in-progress { background: var(--gold-soft); color: var(--gold-deep); }
+.tag.status-shipped { background: var(--ok-soft); color: #114d2f; }
+
 /* forms */
 .form { display: grid; gap: 1rem; margin-top: 1.2rem; }
 .form.boxed { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.2rem; }
