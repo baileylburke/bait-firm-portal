@@ -1,0 +1,68 @@
+<%- include('partials/header') %>
+<%- include('partials/nav') %>
+<% const firm = locals.currentFirm || null; %>
+
+<main id="main">
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Releases</p>
+      <h1>Every build, with what changed.</h1>
+      <p class="lead-sm">Everyone can read the release notes. A firm with an active license can download each build.</p>
+
+      <% if (refusal) { %>
+        <div class="alert error" role="alert">
+          <p><b>The download did not start.</b> <%= refusal %></p>
+        </div>
+      <% } %>
+
+      <% if (access.allowed) { %>
+        <div class="alert ok">
+          <p><b><%= firm.name %></b> has the <b><%= access.current.plan.name %></b> plan, active to <%= shortDate(access.current.license.expiresOn) %>. You can download every build on this page.</p>
+        </div>
+      <% } else { %>
+        <div class="alert info">
+          <p><b>Downloads are not available.</b> <%= access.reason %></p>
+          <% if (access.code === 'sign-in') { %>
+            <p><a href="/sign-in">Sign in</a> or <a href="/register">register your firm</a>.</p>
+          <% } else if (access.code === 'no-license') { %>
+            <p><a href="/plans">See the license plans</a>.</p>
+          <% } %>
+        </div>
+      <% } %>
+
+      <div class="releases">
+        <% releases.forEach(({ release, isLatest }) => { %>
+          <article class="card release">
+            <div class="release-body">
+              <header class="release-head">
+                <h2>BAIT <%= release.version %></h2>
+                <% if (isLatest) { %><span class="pill">Latest</span><% } %>
+                <span class="release-date">Released <%= shortDate(release.releaseDate) %></span>
+              </header>
+              <p class="release-notes"><%= release.notes %></p>
+              <p class="release-types">
+                <% if (release.addsReturnTypes()) { %>
+                  <span>Return types added:</span>
+                  <% release.returnTypesAdded.forEach((type) => { %><span class="tag"><%= type %></span><% }) %>
+                <% } else { %>
+                  <span>No return types added.</span>
+                <% } %>
+              </p>
+            </div>
+            <div class="release-get">
+              <% if (access.allowed) { %>
+                <a class="btn <%= isLatest ? 'primary' : 'ghost' %>" href="/releases/<%= encodeURIComponent(release.version) %>/download">Download <%= release.version %></a>
+                <span class="release-file"><%= release.downloadFile %></span>
+              <% } else { %>
+                <span class="tag warn">Download not available</span>
+                <span class="release-file"><%= access.code === 'sign-in' ? 'Sign in with a licensed firm.' : 'An active license is necessary.' %></span>
+              <% } %>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

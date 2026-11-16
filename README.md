@@ -21,6 +21,7 @@ routes/        URL to controller mapping
 controllers/   receive requests, return responses
 middleware/    request processing, security, and error handling
 services/      business rules
+downloads/     placeholder build files; sent only by the download route
 server.js      application entry point
 ```
 

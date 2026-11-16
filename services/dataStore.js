@@ -84,24 +84,25 @@ function seed() {
     }),
   );
 
+  // Use local dates to preserve the displayed calendar day
   store.releases.push(
     new Release({
       version: '0.1.14',
-      releaseDate: new Date('2026-10-30'),
+      releaseDate: new Date('2026-10-30T00:00:00'),
       notes: 'New return types for homeowners associations, gift tax, and foreign corporations, and the finish-out of the 1041 and 1120.',
       returnTypesAdded: ['1120-H', '709', '1120-F'],
       downloadFile: 'BAIT-Setup-0.1.14.txt',
     }),
     new Release({
       version: '0.1.18',
-      releaseDate: new Date('2026-11-01'),
+      releaseDate: new Date('2026-11-01T00:00:00'),
       notes: 'Estate tax, benefit plan, and heavy vehicle use tax returns, and a round of fixes from the test log.',
       returnTypesAdded: ['1040-SS', '706', '5500', '2290'],
       downloadFile: 'BAIT-Setup-0.1.18.txt',
     }),
     new Release({
       version: '0.1.32',
-      releaseDate: new Date('2026-11-14'),
+      releaseDate: new Date('2026-11-14T00:00:00'),
       notes: 'Fixes and requested changes across the individual and business returns. No new return types.',
       returnTypesAdded: [],
       downloadFile: 'BAIT-Setup-0.1.32.txt',

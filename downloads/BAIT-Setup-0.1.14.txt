@@ -1,0 +1,6 @@
+BAIT 0.1.14 - placeholder build file
+
+This text file stands in for the BAIT 0.1.14 Windows installer.
+The BAIT Firm Portal is a class project (CSCI 3330), so the portal
+does not hold a real installer. The portal sends this file only to a
+signed-in firm that has an active license.

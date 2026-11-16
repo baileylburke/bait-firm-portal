@@ -5,6 +5,7 @@ const express = require('express');
 const pageRoutes = require('./routes/pageRoutes');
 const authRoutes = require('./routes/authRoutes');
 const planRoutes = require('./routes/planRoutes');
+const releaseRoutes = require('./routes/releaseRoutes');
 const dataStore = require('./services/dataStore');
 
 const securityHeaders = require('./middleware/security');
@@ -57,6 +58,7 @@ app.use(express.json({ limit: '20kb' }));
 app.use('/', pageRoutes);
 app.use('/', authRoutes);
 app.use('/', planRoutes);
+app.use('/', releaseRoutes);
 
 // after the routes
 
