@@ -46,6 +46,28 @@ async function currentLicenseOf(firm, today = new Date()) {
   return { license, plan, price: plan.priceFor(firm.preparerCount) };
 }
 
+// Check the active plan seat limit before changing the preparer count
+async function seatRefusalFor(firm, preparerCount, today = new Date()) {
+  const license = findActiveLicense(firm.firmId, today);
+  if (!license) return null;
+
+  const plan = dataStore.findPlanById(license.planId);
+  if (plan.hasRoomFor(preparerCount)) return null;
+
+  return `The ${plan.name} plan has ${seats(plan.seatLimit)}, so your firm cannot have ${preparers(preparerCount)} on it. Change to a plan with at least ${seats(preparerCount)} first.`;
+}
+
+// Firm license history with plan details and active status ordered newest first
+async function licenseHistoryOf(firm, today = new Date()) {
+  return dataStore.licensesOfFirm(firm.firmId)
+    .sort((a, b) => b.licenseId - a.licenseId)
+    .map((license) => ({
+      license,
+      plan: dataStore.findPlanById(license.planId),
+      isActive: license.isActive(today),
+    }));
+}
+
 // Add firm pricing and eligibility to each plan when an account is present
 async function plansFor(firm, today = new Date()) {
   const plans = await listPlans();
@@ -109,4 +131,11 @@ async function choosePlan(firm, planId, today = new Date()) {
   };
 }
 
-module.exports = { listPlans, plansFor, currentLicenseOf, choosePlan };
+module.exports = {
+  listPlans,
+  plansFor,
+  currentLicenseOf,
+  choosePlan,
+  seatRefusalFor,
+  licenseHistoryOf,
+};

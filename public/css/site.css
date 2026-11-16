@@ -222,6 +222,22 @@ form.inline { display: inline; margin: 0; }
 .tag.status-in-progress { background: var(--gold-soft); color: var(--gold-deep); }
 .tag.status-shipped { background: var(--ok-soft); color: #114d2f; }
 
+/* my account */
+.account-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(1.5rem, 3vw, 3rem); align-items: start; margin-top: 1.8rem; }
+@media (max-width: 900px) { .account-grid { grid-template-columns: minmax(0, 1fr); } }
+.account-grid h2, .account-wide h2 { font-size: 1.5rem; margin: 0 0 0.8rem; }
+.account-wide { margin-top: 2.4rem; }
+.kv.roomy th { width: 9.5rem; }
+.kv .kv-sub { display: block; font-size: 0.85rem; color: var(--muted); }
+.form.count-form { margin-top: 1rem; }
+.count-row { display: flex; gap: 0.7rem; align-items: flex-end; flex-wrap: wrap; }
+.count-row > div { flex: 0 1 11rem; }
+.license-actions { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-top: 1rem; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.section-head h2 { margin-bottom: 0; }
+.tag.status-active { background: var(--ok-soft); color: #114d2f; }
+.tag.status-expired { background: var(--paper-2); color: var(--muted); }
+
 /* forms */
 .form { display: grid; gap: 1rem; margin-top: 1.2rem; }
 .form.boxed { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.2rem; }

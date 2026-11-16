@@ -110,6 +110,12 @@ async function ticketsOf(firm) {
   return dataStore.ticketsOfFirm(firm.firmId).sort((a, b) => b.ticketId - a.ticketId);
 }
 
+// Recent firm tickets and total count
+async function recentTicketsOf(firm, limit = 5) {
+  const tickets = await ticketsOf(firm);
+  return { tickets: tickets.slice(0, limit), total: tickets.length };
+}
+
 // Count firm tickets by status
 async function countsOf(firm) {
   const counts = Object.fromEntries(STATUS_ORDER.map((status) => [status, 0]));
@@ -178,6 +184,7 @@ module.exports = {
   formChoices,
   fileTicket,
   ticketsOf,
+  recentTicketsOf,
   countsOf,
   nextStatusOf,
   moveTicket,

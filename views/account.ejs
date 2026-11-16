@@ -1,0 +1,162 @@
+<%- include('partials/header') %>
+<%- include('partials/nav') %>
+<% const firm = currentFirm; %>
+<% const isAdmin = firm.role === 'admin'; %>
+<% const statusClass = (status) => status.toLowerCase().replace(/\s+/g, '-'); %>
+<% const shownCount = values.preparerCount !== undefined && values.preparerCount !== '' ? values.preparerCount : firm.preparerCount; %>
+
+<main id="main">
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">My Account</p>
+      <h1><%= firm.name %></h1>
+      <p class="lead-sm">Your firm’s details, its license, and its support tickets.</p>
+
+      <% if (refusal) { %>
+        <div class="alert error" role="alert">
+          <p><b>The number of preparers was not changed.</b> <%= refusal %></p>
+          <% if (current) { %><p><a href="/plans">See the license plans</a>.</p><% } %>
+        </div>
+      <% } else if (errors.preparerCount) { %>
+        <div class="alert error" role="alert">
+          <p><b>The number of preparers was not changed.</b> Correct the field marked below.</p>
+        </div>
+      <% } %>
+
+      <div class="account-grid">
+        <div class="account-firm">
+          <h2>Firm details</h2>
+          <table class="kv roomy">
+            <tbody>
+              <tr><th scope="row">Firm name</th><td><%= firm.name %></td></tr>
+              <tr><th scope="row">Contact email</th><td><%= firm.email %></td></tr>
+              <tr><th scope="row">Account</th><td><%= isAdmin ? 'Administrator' : 'Firm' %></td></tr>
+              <% if (!isAdmin) { %>
+                <tr><th scope="row">Preparers</th><td><%= firm.preparerCount %></td></tr>
+              <% } %>
+            </tbody>
+          </table>
+
+          <% if (!isAdmin) { %>
+            <form class="form boxed count-form" method="post" action="/account/preparers" novalidate>
+              <div class="count-row">
+                <div>
+                  <label for="preparerCount">Number of preparers</label>
+                  <input id="preparerCount" name="preparerCount" type="number" inputmode="numeric" step="1"
+                    min="<%= rules.PREPARERS_MIN %>" max="<%= rules.PREPARERS_MAX %>" required
+                    value="<%= shownCount %>"
+                    aria-describedby="preparerCount-hint<%= errors.preparerCount ? ' preparerCount-error' : '' %>"
+                    <% if (errors.preparerCount || refusal) { %>aria-invalid="true"<% } %>>
+                </div>
+                <button class="btn primary" type="submit">Update</button>
+              </div>
+              <% if (errors.preparerCount) { %><p class="field-error" id="preparerCount-error"><%= errors.preparerCount %></p><% } %>
+              <p class="field-hint" id="preparerCount-hint">
+                <% if (current) { %>
+                  The <%= current.plan.name %> plan has <%= plural(current.plan.seatLimit, 'seat') %>. The yearly price is <%= money(current.plan.pricePerSeat) %> for each preparer.
+                <% } else { %>
+                  The number of preparers sets the price of each license plan.
+                <% } %>
+              </p>
+            </form>
+          <% } %>
+        </div>
+
+        <div class="account-license">
+          <h2>License</h2>
+          <% if (isAdmin) { %>
+            <div class="alert info"><p>An administrator account does not hold a license.</p></div>
+          <% } else if (current) { %>
+            <table class="kv roomy">
+              <tbody>
+                <tr><th scope="row">Plan</th><td><b><%= current.plan.name %></b> <span class="tag status-active">Active</span></td></tr>
+                <tr>
+                  <th scope="row">Price</th>
+                  <td><b><%= money(current.price) %></b> a year<span class="kv-sub"><%= money(current.plan.pricePerSeat) %> × <%= plural(firm.preparerCount, 'preparer') %></span></td>
+                </tr>
+                <tr><th scope="row">Seats</th><td><%= firm.preparerCount %> of <%= current.plan.seatLimit %> in use</td></tr>
+                <tr><th scope="row">Started</th><td><%= shortDate(current.license.startDate) %></td></tr>
+                <tr><th scope="row">Runs to</th><td><%= shortDate(current.license.expiresOn) %></td></tr>
+                <tr><th scope="row">Return types</th><td><%= current.plan.returnTypes.join(', ') %></td></tr>
+                <tr><th scope="row">E-file</th><td><%= current.plan.efileIncluded ? 'Included' : 'Not included' %></td></tr>
+              </tbody>
+            </table>
+            <div class="license-actions">
+              <a class="btn ghost small" href="/plans">Change the plan</a>
+              <a class="btn ghost small" href="/releases">Download a build</a>
+            </div>
+          <% } else { %>
+            <div class="alert info">
+              <p><b><%= firm.name %></b> has no active license. Choose a plan to download the releases.</p>
+            </div>
+            <div class="license-actions">
+              <a class="btn primary" href="/plans">See the license plans</a>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <% if (!isAdmin) { %>
+        <div class="account-wide">
+          <h2>License history</h2>
+          <% if (history.length === 0) { %>
+            <p class="muted">No license yet.</p>
+          <% } else { %>
+            <div class="table-wrap">
+              <table class="list licenses">
+                <thead>
+                  <tr><th scope="col">License</th><th scope="col">Plan</th><th scope="col">Started</th><th scope="col">Ended or runs to</th><th scope="col">Status</th></tr>
+                </thead>
+                <tbody>
+                  <% history.forEach(({ license, plan, isActive }) => { %>
+                    <tr class="<%= isActive ? '' : 'off' %>">
+                      <td>L-<%= license.licenseId %></td>
+                      <td><%= plan.name %></td>
+                      <td><%= shortDate(license.startDate) %></td>
+                      <td><%= shortDate(license.expiresOn) %></td>
+                      <td><span class="tag status-<%= isActive ? 'active' : 'expired' %>"><%= isActive ? 'Active' : 'Expired' %></span></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } %>
+        </div>
+
+        <div class="account-wide">
+          <div class="section-head">
+            <h2>Tickets</h2>
+            <a href="/support"><%= ticketTotal > tickets.length ? 'See all ' + ticketTotal + ' tickets in Support' : 'Open Support' %></a>
+          </div>
+          <% if (tickets.length === 0) { %>
+            <p class="muted">No tickets yet. <a href="/support">File a bug report or a change request</a>.</p>
+          <% } else { %>
+            <div class="table-wrap">
+              <table class="list tickets">
+                <thead>
+                  <tr><th scope="col">Ticket</th><th scope="col">Type</th><th scope="col">For</th><th scope="col">Filed</th><th scope="col">Status</th></tr>
+                </thead>
+                <tbody>
+                  <% tickets.forEach((ticket) => { %>
+                    <tr>
+                      <td class="ticket-id"><a href="/support"><b>#<%= ticket.ticketId %></b></a></td>
+                      <td><%= ticket.typeLabel() %></td>
+                      <td><%= ticket.returnType %>, <%= ticket.form %></td>
+                      <td><%= shortDate(ticket.createdOn) %></td>
+                      <td class="ticket-status">
+                        <span class="tag status-<%= statusClass(ticket.status) %>"><%= ticket.status %></span>
+                        <% if (ticket.shippedIn) { %><span class="ticket-sub">in BAIT <%= ticket.shippedIn %></span><% } %>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } %>
+        </div>
+      <% } %>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

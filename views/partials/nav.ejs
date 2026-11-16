@@ -11,6 +11,9 @@
       <a href="/plans" class="<%= active === 'plans' ? 'on' : '' %>">Plans</a>
       <a href="/releases" class="<%= active === 'releases' ? 'on' : '' %>">Releases</a>
       <a href="/support" class="<%= active === 'support' ? 'on' : '' %>">Support</a>
+      <% if (firm) { %>
+        <a href="/account" class="<%= active === 'account' ? 'on' : '' %>">My Account</a>
+      <% } %>
     </nav>
     <div class="actions">
       <% if (firm) { %>

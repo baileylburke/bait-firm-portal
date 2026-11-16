@@ -1,5 +1,6 @@
 // Validate firm accounts and handle registration and sign in
 const dataStore = require('./dataStore');
+const licenseService = require('./licenseService');
 const { hashPassword, verifyPassword } = require('./passwords');
 
 const { Firm } = dataStore;
@@ -93,4 +94,31 @@ async function signIn(email, password) {
   return { ok: true, firm };
 }
 
-module.exports = { registerFirm, signIn, checkPreparerCount, RULES };
+// Validate the new preparer count against the active plan seat limit
+async function updatePreparerCount(firm, preparerCount, today = new Date()) {
+  if (firm.isAdmin()) {
+    return { ok: false, errors: {}, reason: 'An administrator account has no preparers.' };
+  }
+
+  const countError = checkPreparerCount(preparerCount);
+  if (countError) {
+    return { ok: false, errors: { preparerCount: countError }, reason: null };
+  }
+
+  const reason = await licenseService.seatRefusalFor(firm, preparerCount, today);
+  if (reason) {
+    return { ok: false, errors: {}, reason };
+  }
+
+  const previous = firm.preparerCount;
+  firm.preparerCount = preparerCount;
+  return { ok: true, firm, previous };
+}
+
+module.exports = {
+  registerFirm,
+  signIn,
+  updatePreparerCount,
+  checkPreparerCount,
+  RULES,
+};
