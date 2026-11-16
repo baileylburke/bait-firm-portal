@@ -10,6 +10,7 @@
       <a href="/releases">Releases</a>
       <a href="/support">Support</a>
       <% if (locals.currentFirm) { %><a href="/account">My Account</a><% } %>
+      <% if (locals.currentFirm && locals.currentFirm.role === 'admin') { %><a href="/admin">Admin</a><% } %>
       <a href="<%= site.productUrl %>">bait.tax</a>
       <a href="mailto:<%= site.contact %>"><%= site.contact %></a>
     </nav>

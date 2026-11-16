@@ -8,6 +8,11 @@ class Release {
     this.downloadFile = downloadFile;
   }
 
+  // Check whether the release date has arrived
+  isPublished(today = new Date()) {
+    return this.releaseDate <= today;
+  }
+
   // Check for newly supported return types
   addsReturnTypes() {
     return this.returnTypesAdded.length > 0;

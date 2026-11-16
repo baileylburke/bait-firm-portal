@@ -14,6 +14,9 @@
       <% if (firm) { %>
         <a href="/account" class="<%= active === 'account' ? 'on' : '' %>">My Account</a>
       <% } %>
+      <% if (firm && firm.role === 'admin') { %>
+        <a href="/admin" class="<%= active === 'admin' ? 'on' : '' %>">Admin</a>
+      <% } %>
     </nav>
     <div class="actions">
       <% if (firm) { %>

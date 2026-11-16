@@ -19,6 +19,12 @@ async function listReleases() {
   return [...dataStore.store.releases].sort((a, b) => b.releaseDate - a.releaseDate);
 }
 
+// Published releases ordered newest first
+async function publishedReleases(today = new Date()) {
+  const releases = await listReleases();
+  return releases.filter((release) => release.isPublished(today));
+}
+
 // Return download eligibility with the active license or a refusal reason
 async function downloadAccessFor(firm, today = new Date()) {
   if (!firm) {
@@ -91,4 +97,11 @@ async function requestDownload(firm, version, today = new Date()) {
   return { ok: true, release, filePath, fileName: release.downloadFile };
 }
 
-module.exports = { listReleases, releasesFor, downloadAccessFor, requestDownload, REFUSALS };
+module.exports = {
+  listReleases,
+  publishedReleases,
+  releasesFor,
+  downloadAccessFor,
+  requestDownload,
+  REFUSALS,
+};

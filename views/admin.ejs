@@ -1,0 +1,142 @@
+<%- include('partials/header') %>
+<%- include('partials/nav') %>
+<% const statusClass = (status) => status.toLowerCase().replace(/\s+/g, '-'); %>
+
+<main id="main">
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Admin</p>
+      <h1>Firms, licenses, and tickets.</h1>
+      <p class="lead-sm">Every account in the portal. A ticket moves from Open to In progress to Shipped, one step at a time, and ships only in a published release.</p>
+
+      <% if (refusal) { %>
+        <div class="alert error" role="alert">
+          <p><b>The ticket was not changed.</b> <%= refusal %></p>
+        </div>
+      <% } %>
+
+      <dl class="admin-totals">
+        <div><dt>Firms</dt><dd><%= totals.firms %></dd></div>
+        <div><dt>Active licenses</dt><dd><%= totals.activeLicenses %></dd></div>
+        <div><dt>License total a year</dt><dd><%= money(totals.yearlyTotal) %></dd></div>
+        <% Object.entries(totals.byStatus).forEach(([status, count]) => { %>
+          <div><dt><%= status %> tickets</dt><dd><%= count %></dd></div>
+        <% }) %>
+      </dl>
+
+      <nav class="admin-jump" aria-label="Sections of this page">
+        <a href="#tickets">Tickets</a>
+        <a href="#firms">Firms</a>
+        <a href="#licenses">Licenses</a>
+      </nav>
+
+      <div class="admin-block" id="tickets">
+        <h2>Tickets <span class="count"><%= totals.tickets %></span></h2>
+        <% if (tickets.length === 0) { %>
+          <p class="muted">No firm has filed a ticket yet.</p>
+        <% } else { %>
+          <div class="table-wrap">
+            <table class="list tickets admin-tickets">
+              <thead>
+                <tr><th scope="col">Ticket</th><th scope="col">Firm</th><th scope="col">For</th><th scope="col">Description</th><th scope="col">Status</th><th scope="col">Next step</th></tr>
+              </thead>
+              <tbody>
+                <% tickets.forEach(({ ticket, firm, next }) => { %>
+                  <tr id="ticket-<%= ticket.ticketId %>" class="<%= refusedTicketId === ticket.ticketId ? 'refused' : '' %>">
+                    <td class="ticket-id"><b>#<%= ticket.ticketId %></b><span class="ticket-sub"><%= shortDate(ticket.createdOn) %></span></td>
+                    <td><%= firm ? firm.name : 'Unknown firm' %></td>
+                    <td><%= ticket.returnType %>, <%= ticket.form %><span class="ticket-sub"><%= ticket.typeLabel() %></span></td>
+                    <td class="msg"><%= ticket.description %></td>
+                    <td class="ticket-status">
+                      <span class="tag status-<%= statusClass(ticket.status) %>"><%= ticket.status %></span>
+                      <% if (ticket.shippedIn) { %><span class="ticket-sub">in BAIT <%= ticket.shippedIn %></span><% } %>
+                    </td>
+                    <td class="acts">
+                      <% if (next === 'In progress') { %>
+                        <form class="move-form" method="post" action="/admin/tickets/<%= ticket.ticketId %>/status">
+                          <input type="hidden" name="status" value="<%= next %>">
+                          <button class="btn ghost small" type="submit" aria-label="Start work on ticket #<%= ticket.ticketId %>">Start work</button>
+                        </form>
+                      <% } else if (next === 'Shipped') { %>
+                        <form class="move-form" method="post" action="/admin/tickets/<%= ticket.ticketId %>/status">
+                          <input type="hidden" name="status" value="<%= next %>">
+                          <label class="sr-only" for="shippedIn-<%= ticket.ticketId %>">Release that ships ticket #<%= ticket.ticketId %></label>
+                          <select id="shippedIn-<%= ticket.ticketId %>" name="shippedIn" required
+                            <% if (refusedTicketId === ticket.ticketId) { %>aria-invalid="true"<% } %>>
+                            <option value="">Release…</option>
+                            <% releases.forEach((release) => { %>
+                              <option value="<%= release.version %>" <%= refusedTicketId === ticket.ticketId && chosen.shippedIn === release.version ? 'selected' : '' %>>BAIT <%= release.version %></option>
+                            <% }) %>
+                          </select>
+                          <button class="btn primary small" type="submit" aria-label="Mark ticket #<%= ticket.ticketId %> shipped">Mark shipped</button>
+                        </form>
+                      <% } else { %>
+                        <span class="muted">Complete</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="admin-block" id="firms">
+        <h2>Firms <span class="count"><%= totals.firms %></span></h2>
+        <% if (firms.length === 0) { %>
+          <p class="muted">No firm has registered yet.</p>
+        <% } else { %>
+          <div class="table-wrap">
+            <table class="list admin-firms">
+              <thead>
+                <tr><th scope="col">Firm</th><th scope="col">Contact email</th><th scope="col">Preparers</th><th scope="col">Plan</th><th scope="col">Price a year</th><th scope="col">Tickets</th></tr>
+              </thead>
+              <tbody>
+                <% firms.forEach(({ firm, plan, price, ticketCount }) => { %>
+                  <tr>
+                    <td><b><%= firm.name %></b></td>
+                    <td><%= firm.email %></td>
+                    <td><%= firm.preparerCount %></td>
+                    <td><% if (plan) { %><%= plan.name %><% } else { %><span class="muted">No active license</span><% } %></td>
+                    <td><%= plan ? money(price) : '' %></td>
+                    <td><%= ticketCount %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="admin-block" id="licenses">
+        <h2>Licenses <span class="count"><%= licenses.length %></span></h2>
+        <% if (licenses.length === 0) { %>
+          <p class="muted">No firm has chosen a plan yet.</p>
+        <% } else { %>
+          <div class="table-wrap">
+            <table class="list licenses admin-licenses">
+              <thead>
+                <tr><th scope="col">License</th><th scope="col">Firm</th><th scope="col">Plan</th><th scope="col">Started</th><th scope="col">Ended or runs to</th><th scope="col">Status</th></tr>
+              </thead>
+              <tbody>
+                <% licenses.forEach(({ license, firm, plan, isActive }) => { %>
+                  <tr class="<%= isActive ? '' : 'off' %>">
+                    <td>L-<%= license.licenseId %></td>
+                    <td><%= firm ? firm.name : 'Unknown firm' %></td>
+                    <td><%= plan.name %></td>
+                    <td><%= shortDate(license.startDate) %></td>
+                    <td><%= shortDate(license.expiresOn) %></td>
+                    <td><span class="tag status-<%= isActive ? 'active' : 'expired' %>"><%= isActive ? 'Active' : 'Expired' %></span></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

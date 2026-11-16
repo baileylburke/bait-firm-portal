@@ -115,9 +115,17 @@ async function updatePreparerCount(firm, preparerCount, today = new Date()) {
   return { ok: true, firm, previous };
 }
 
+// Customer firms sorted by name without the administrator
+async function listFirms() {
+  return dataStore.store.firms
+    .filter((firm) => !firm.isAdmin())
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
 module.exports = {
   registerFirm,
   signIn,
+  listFirms,
   updatePreparerCount,
   checkPreparerCount,
   RULES,

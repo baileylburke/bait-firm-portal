@@ -24,6 +24,14 @@ const RETURN_TYPES = Object.freeze(
 // Allowed ticket status order
 const STATUS_ORDER = Object.freeze([STATUSES.OPEN, STATUSES.IN_PROGRESS, STATUSES.SHIPPED]);
 
+// Status change refusal codes used to select HTTP statuses
+const CODES = Object.freeze({
+  NOT_ADMIN: 'not-admin',
+  NOT_FOUND: 'not-found',
+  INPUT: 'input',
+  RULE: 'rule',
+});
+
 function text(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
@@ -125,6 +133,22 @@ async function countsOf(firm) {
   return counts;
 }
 
+// every ticket
+
+// All tickets ordered newest first
+async function allTickets() {
+  return [...dataStore.store.tickets].sort((a, b) => b.ticketId - a.ticketId);
+}
+
+// Count all tickets by status
+async function countsOfAll() {
+  const counts = Object.fromEntries(STATUS_ORDER.map((status) => [status, 0]));
+  for (const ticket of dataStore.store.tickets) {
+    counts[ticket.status] += 1;
+  }
+  return counts;
+}
+
 // status rules
 
 // Return the next status or null when already Shipped
@@ -135,31 +159,32 @@ function nextStatusOf(ticket) {
 
 // Check that the release exists and is published
 function isPublished(release, today) {
-  return Boolean(release) && release.releaseDate <= today;
+  return Boolean(release) && release.isPublished(today);
 }
 
 // Advance the ticket one status and require a published release for Shipped
 async function moveTicket(actor, ticketId, newStatus, { shippedIn } = {}, today = new Date()) {
   if (!actor || !actor.isAdmin()) {
-    return { ok: false, reason: 'Only the administrator can change the status of a ticket.' };
+    return { ok: false, code: CODES.NOT_ADMIN, reason: 'Only the administrator can change the status of a ticket.' };
   }
 
   const ticket = dataStore.findTicketById(Number(ticketId));
   if (!ticket) {
-    return { ok: false, reason: 'The portal has no ticket with that number.' };
+    return { ok: false, code: CODES.NOT_FOUND, reason: 'The portal has no ticket with that number.' };
   }
 
   if (!STATUS_ORDER.includes(newStatus)) {
-    return { ok: false, reason: 'Choose one of the listed statuses.' };
+    return { ok: false, code: CODES.INPUT, reason: 'Choose one of the listed statuses.' };
   }
 
   const next = nextStatusOf(ticket);
   if (next === null) {
-    return { ok: false, reason: `Ticket #${ticket.ticketId} is Shipped. A shipped ticket does not change.` };
+    return { ok: false, code: CODES.RULE, reason: `Ticket #${ticket.ticketId} is Shipped. A shipped ticket does not change.` };
   }
   if (newStatus !== next) {
     return {
       ok: false,
+      code: CODES.RULE,
       reason: `Ticket #${ticket.ticketId} is ${ticket.status}. Its next status is ${next}; a ticket moves one step at a time and does not go back.`,
     };
   }
@@ -167,11 +192,11 @@ async function moveTicket(actor, ticketId, newStatus, { shippedIn } = {}, today 
   if (newStatus === STATUSES.SHIPPED) {
     const version = text(shippedIn);
     if (!version) {
-      return { ok: false, reason: 'Choose the release that ships this ticket.' };
+      return { ok: false, code: CODES.INPUT, reason: 'Choose the release that ships this ticket.' };
     }
     const release = dataStore.findReleaseByVersion(version);
     if (!isPublished(release, today)) {
-      return { ok: false, reason: `BAIT ${version} is not a published release. A ticket ships only in a published release.` };
+      return { ok: false, code: CODES.RULE, reason: `BAIT ${version} is not a published release. A ticket ships only in a published release.` };
     }
     ticket.shippedIn = release.version;
   }
@@ -186,8 +211,11 @@ module.exports = {
   ticketsOf,
   recentTicketsOf,
   countsOf,
+  allTickets,
+  countsOfAll,
   nextStatusOf,
   moveTicket,
+  CODES,
   RULES,
   TYPE_CHOICES,
   RETURN_TYPES,

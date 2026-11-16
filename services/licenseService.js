@@ -68,6 +68,17 @@ async function licenseHistoryOf(firm, today = new Date()) {
     }));
 }
 
+// All licenses with plan details and active status ordered newest first
+async function allLicenses(today = new Date()) {
+  return [...dataStore.store.licenses]
+    .sort((a, b) => b.licenseId - a.licenseId)
+    .map((license) => ({
+      license,
+      plan: dataStore.findPlanById(license.planId),
+      isActive: license.isActive(today),
+    }));
+}
+
 // Add firm pricing and eligibility to each plan when an account is present
 async function plansFor(firm, today = new Date()) {
   const plans = await listPlans();
@@ -138,4 +149,5 @@ module.exports = {
   choosePlan,
   seatRefusalFor,
   licenseHistoryOf,
+  allLicenses,
 };

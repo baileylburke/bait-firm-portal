@@ -11,6 +11,25 @@ npm start
 
 Open http://localhost:3000.
 
+## Demo administrator
+
+The Admin page is restricted to administrators. `services/dataStore.js` creates a demo administrator account:
+
+| | |
+|---|---|
+| Email | `admin@bait.tax` |
+| Password | `bait-admin-demo` |
+
+Sign in at http://localhost:3000/sign-in to access **Admin**.
+
+These credentials are for local demos only. Set `ADMIN_PASSWORD` to change the password. In Bash:
+
+```bash
+ADMIN_PASSWORD="another password" npm start
+```
+
+To populate the Admin page, register a firm, choose a plan, and file a support ticket. Then sign out and sign in as the administrator. Records reset when the server restarts.
+
 ## Layout
 
 ```
