@@ -1,0 +1,81 @@
+<%- include('partials/header') %>
+<%- include('partials/nav') %>
+<% const firm = locals.currentFirm || null; %>
+<% const isAdmin = Boolean(firm) && firm.role === 'admin'; %>
+
+<main id="main">
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">License plans</p>
+      <h1>A plan for the size of your office.</h1>
+      <p class="lead-sm">A license runs for one year. The price is the plan’s price per preparer times the number of preparers in your firm.</p>
+
+      <% if (refusal) { %>
+        <div class="alert error" role="alert">
+          <p><b>The plan was not changed.</b> <%= refusal %></p>
+        </div>
+      <% } %>
+
+      <% if (firm && !isAdmin) { %>
+        <div class="alert info">
+          <% if (current) { %>
+            <p><b><%= firm.name %></b> has the <b><%= current.plan.name %></b> plan: <%= money(current.price) %> a year for <%= plural(firm.preparerCount, 'preparer') %>. The license started on <%= shortDate(current.license.startDate) %> and runs to <%= shortDate(current.license.expiresOn) %>.</p>
+          <% } else { %>
+            <p><b><%= firm.name %></b> has no license yet. The prices below are for your <%= plural(firm.preparerCount, 'preparer') %>.</p>
+          <% } %>
+        </div>
+      <% } else if (isAdmin) { %>
+        <div class="alert info"><p>You are signed in as the administrator. An administrator account does not hold a license.</p></div>
+      <% } %>
+
+      <div class="grid three plans">
+        <% plans.forEach(({ plan, price, isCurrent, canChoose, reason }) => { %>
+          <article class="card plan<%= isCurrent ? ' current' : '' %>">
+            <header class="plan-head">
+              <h2><%= plan.name %></h2>
+              <% if (isCurrent) { %><span class="pill">Current plan</span><% } %>
+            </header>
+
+            <p class="plan-rate"><b><%= money(plan.pricePerSeat) %></b> per preparer, per year</p>
+
+            <ul class="checks plan-facts">
+              <li><b><%= plan.seatLimit === 1 ? 'One preparer' : 'Up to ' + plan.seatLimit + ' preparers' %></b></li>
+              <li>Return types: <%= plan.returnTypes.join(', ') %></li>
+              <li><%= plan.efileIncluded ? 'E-file included' : 'Paper filing only; e-file is not included' %></li>
+            </ul>
+
+            <div class="plan-foot">
+              <% if (!firm) { %>
+                <a class="btn ghost wide" href="/register">Register to choose <%= plan.name %></a>
+              <% } else if (isAdmin) { %>
+                <p class="plan-note"><%= plan.seatLimit === 1 ? '1 seat' : plan.seatLimit + ' seats' %></p>
+              <% } else { %>
+                <p class="plan-price">
+                  <span class="plan-price-label">Your price</span>
+                  <b><%= money(price) %></b> a year
+                  <span class="plan-price-math"><%= money(plan.pricePerSeat) %> × <%= plural(firm.preparerCount, 'preparer') %></span>
+                </p>
+                <% if (canChoose) { %>
+                  <form method="post" action="/plans/choose">
+                    <input type="hidden" name="planId" value="<%= plan.planId %>">
+                    <button class="btn primary wide" type="submit"><%= current ? 'Change to ' + plan.name : 'Choose ' + plan.name %></button>
+                  </form>
+                <% } else if (!isCurrent) { %>
+                  <p class="plan-note warn"><%= reason %></p>
+                <% } else { %>
+                  <p class="plan-note">Active to <%= shortDate(current.license.expiresOn) %>.</p>
+                <% } %>
+              <% } %>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+
+      <% if (!firm) { %>
+        <p class="plans-after">Already registered? <a href="/sign-in">Sign in</a> to see the price for your firm.</p>
+      <% } %>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

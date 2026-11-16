@@ -3,6 +3,7 @@ const firmService = require('../services/firmService');
 const { startSession, endSession, setFlash } = require('../middleware/session');
 
 const HOME = '/';
+const PLANS = '/plans';
 
 function renderRegister(res, { status = 200, values = {}, errors = {} } = {}) {
   res.status(status).render('register', {
@@ -58,8 +59,8 @@ async function register(req, res, next) {
     }
 
     await startSession(req, result.firm);
-    setFlash(req, 'ok', `Welcome, ${result.firm.name}. Your firm account is ready.`);
-    res.redirect(HOME);
+    setFlash(req, 'ok', `Welcome, ${result.firm.name}. Your firm account is ready. Choose a license plan to continue.`);
+    res.redirect(PLANS);
   } catch (err) {
     next(err);
   }

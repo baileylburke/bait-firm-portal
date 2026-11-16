@@ -170,6 +170,25 @@ form.inline { display: inline; margin: 0; }
 .checks.light li::before { background: rgba(217, 162, 27, 0.18); }
 .checks.light li::after { border-color: var(--gold); }
 
+/* plans */
+.plans { align-items: stretch; }
+.plan { display: flex; flex-direction: column; padding-bottom: 1.4rem; }
+.plan.current { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-soft), 0 1px 2px rgba(20, 41, 74, 0.05); }
+.plan-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; }
+.plan-head h2 { font-size: 1.6rem; margin: 0; }
+.plan-head .pill { margin: 0; }
+.plan .plan-rate { margin: 0.6rem 0 1.1rem; color: var(--muted); }
+.plan .plan-rate b { font-size: 1.5rem; color: var(--navy-deep); font-weight: 700; }
+.plan-facts { gap: 0.6rem; margin-bottom: 1.2rem; }
+.plan-foot { margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--line); }
+.plan .plan-price { margin: 0 0 0.9rem; color: var(--ink); }
+.plan-price b { font-size: 1.35rem; color: var(--navy-deep); }
+.plan-price-label { display: block; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.plan-price-math { display: block; font-size: 0.88rem; color: var(--muted); }
+.plan .plan-note { margin: 0; font-size: 0.92rem; color: var(--muted); }
+.plan .plan-note.warn { color: #6c0a1b; background: var(--err-soft); border-radius: 8px; padding: 0.6rem 0.75rem; }
+.plans-after { margin-top: 1.5rem; color: var(--muted); }
+
 /* forms */
 .form { display: grid; gap: 1rem; margin-top: 1.2rem; }
 .form.boxed { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.2rem; }

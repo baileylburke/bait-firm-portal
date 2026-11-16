@@ -9,11 +9,14 @@
         <h1>One place for your firm’s license, downloads, and support.</h1>
         <p class="lead"><%= site.product %> is professional tax-preparation software for Windows. The Firm Portal is where your office buys its license, downloads each release, and reports what needs to be fixed or added.</p>
         <% if (locals.currentFirm) { %>
+          <div class="cta">
+            <a class="btn primary big" href="/plans">See the license plans</a>
+          </div>
           <p class="status"><span class="pill">Signed in</span> <%= currentFirm.name %> · <%= currentFirm.preparerCount %> <%= currentFirm.preparerCount === 1 ? 'preparer' : 'preparers' %>. Client and return data never leave the firm’s own computers.</p>
         <% } else { %>
           <div class="cta">
             <a class="btn primary big" href="/register">Register your firm</a>
-            <a class="btn ghost big" href="/sign-in">Sign in</a>
+            <a class="btn ghost big" href="/plans">See the plans</a>
           </div>
           <p class="status"><span class="pill">Private preview</span> Client and return data never leave the firm’s own computers.</p>
         <% } %>

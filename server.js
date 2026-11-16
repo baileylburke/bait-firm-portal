@@ -4,6 +4,7 @@ const express = require('express');
 
 const pageRoutes = require('./routes/pageRoutes');
 const authRoutes = require('./routes/authRoutes');
+const planRoutes = require('./routes/planRoutes');
 const dataStore = require('./services/dataStore');
 
 const securityHeaders = require('./middleware/security');
@@ -11,6 +12,7 @@ const requestLogger = require('./middleware/requestLogger');
 const { sessions, flashToView } = require('./middleware/session');
 const { loadCurrentFirm } = require('./middleware/auth');
 const { notFound, errorHandler } = require('./middleware/errorHandlers');
+const viewHelpers = require('./middleware/viewHelpers');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,6 +28,9 @@ app.locals.site = {
   productUrl: 'https://bait.tax',
   contact: 'hello@bait.tax',
 };
+
+// Register shared formatting helpers
+Object.assign(app.locals, viewHelpers);
 
 // middleware
 
@@ -51,6 +56,7 @@ app.use(express.json({ limit: '20kb' }));
 
 app.use('/', pageRoutes);
 app.use('/', authRoutes);
+app.use('/', planRoutes);
 
 // after the routes
 
